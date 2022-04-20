@@ -53,8 +53,13 @@ jobs:
           name: Deploy to docker hub
           command: |
             [[ -n "$DOCKERHUB_REPO" && -n "$DOCKER_USER" && -n "$DOCKER_PASS" ]] || exit 0
-            docker tag "${DOCKERHUB_REPO}" "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
-            docker push "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
+            if [[ "$CIRCLE_BRANCH" == "development" ]]; then
+              docker tag "${DOCKERHUB_REPO}" "${DOCKERHUB_REPO}:development"
+              docker push "${DOCKERHUB_REPO}:development"
+            else
+              docker tag "${DOCKERHUB_REPO}" "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
+              docker push "${DOCKERHUB_REPO}:${CIRCLE_SHA1}"
+            fi
             if [[ "$CIRCLE_BRANCH" == "master" ]]; then
               docker push "${DOCKERHUB_REPO}:latest"
             fi
